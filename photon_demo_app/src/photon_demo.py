@@ -332,13 +332,19 @@ class FinalPhotonDemo:
             f"<b>Layer {self.current_layer_index + 1} Properties</b>"
         )
 
-        # Update preset dropdown
-        self.preset_dropdown.selected_option = current_layer.preset_name
+        # Update preset dropdown (if the preset exists in options)
+        if current_layer.preset_name in LAYER_PRESETS:
+            self.preset_dropdown.selected_option = current_layer.preset_name
 
-        # Update tau sliders
+        # Update tau sliders - IMPORTANT: set value_range BEFORE set_current_value
         self.tau_top_slider.set_current_value(current_layer.tau_top)
+
+        # Update tau_bottom range and value
+        new_bottom_range = (current_layer.tau_top + 0.1, 50.0)
+        if self.tau_bottom_slider.value_range != new_bottom_range:
+            self.tau_bottom_slider.value_range = new_bottom_range
+            self.tau_bottom_slider.rebuild()
         self.tau_bottom_slider.set_current_value(current_layer.tau_bottom)
-        self.tau_bottom_slider.value_range = (current_layer.tau_top + 0.1, 50.0)
 
         # Update omega and g sliders
         self.omega_slider.set_current_value(current_layer.omega_0)
@@ -401,13 +407,24 @@ class FinalPhotonDemo:
 
         self.layers.append(new_layer)
 
-        # Update layer dropdown
-        layer_options = [f"Layer {i + 1}" for i in range(len(self.layers))]
-        self.layer_dropdown.options_list = layer_options
-        self.layer_dropdown.selected_option = layer_options[-1]
-
-        # Select the new layer
+        # Select the new layer BEFORE updating dropdown
         self.current_layer_index = len(self.layers) - 1
+
+        # Update layer dropdown - rebuild it completely
+        layer_options = [f"Layer {i + 1}" for i in range(len(self.layers))]
+        self.layer_dropdown.kill()
+        self.layer_dropdown = pygame_gui.elements.UIDropDownMenu(
+            options_list=layer_options,
+            starting_option=layer_options[-1],
+            relative_rect=pygame.Rect(
+                SCENE_WIDTH + 20,
+                90,  # Same position as original
+                PANEL_WIDTH - 60,
+                30,
+            ),
+            manager=self.ui_manager,
+        )
+
         self._update_layer_controls()
         self._update_layer_buttons()
 
@@ -426,10 +443,20 @@ class FinalPhotonDemo:
         # Rebuild layer boundaries
         self._rebuild_layers()
 
-        # Update layer dropdown
+        # Update layer dropdown - rebuild it completely
         layer_options = [f"Layer {i + 1}" for i in range(len(self.layers))]
-        self.layer_dropdown.options_list = layer_options
-        self.layer_dropdown.selected_option = layer_options[self.current_layer_index]
+        self.layer_dropdown.kill()
+        self.layer_dropdown = pygame_gui.elements.UIDropDownMenu(
+            options_list=layer_options,
+            starting_option=layer_options[self.current_layer_index],
+            relative_rect=pygame.Rect(
+                SCENE_WIDTH + 20,
+                90,  # Same position as original
+                PANEL_WIDTH - 60,
+                30,
+            ),
+            manager=self.ui_manager,
+        )
 
         # Update controls
         self._update_layer_controls()
