@@ -1,12 +1,44 @@
 """
 Real-time animated photon simulation
 Shows photons moving vertically through atmosphere with scattering/absorption events
+Supports multi-layer atmospheres with different optical properties per layer
 """
 
 import numpy as np
 from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
 from enum import Enum
+
+
+@dataclass
+class AtmosphericLayer:
+    """
+    Defines a single atmospheric layer with optical properties
+
+    Attributes:
+        tau_top: Optical depth at top of layer
+        tau_bottom: Optical depth at bottom of layer
+        omega_0: Single scattering albedo [0, 1]
+        g: Asymmetry parameter [-1, 1]
+        preset_name: Name of preset used (for UI display)
+        color: RGBA color for visualization
+    """
+
+    tau_top: float
+    tau_bottom: float
+    omega_0: float
+    g: float
+    preset_name: str = "Custom"
+    color: Tuple[int, int, int, int] = (135, 206, 235, 80)
+
+    @property
+    def tau_thickness(self) -> float:
+        """Optical thickness of this layer"""
+        return self.tau_bottom - self.tau_top
+
+    def contains_tau(self, tau: float) -> bool:
+        """Check if optical depth is within this layer"""
+        return self.tau_top <= tau <= self.tau_bottom
 
 
 class PhotonState(Enum):
@@ -120,23 +152,19 @@ class SimulationStats:
 class PhotonSimulation:
     """
     Manages real-time animated photon simulation
-    Photons move step-by-step through atmosphere
+    Photons move step-by-step through multi-layer atmosphere
     """
 
     def __init__(
         self,
-        tau_max: float,
-        omega_0: float,
-        g: float,
+        layers: List[AtmosphericLayer],
         surface_albedo: float,
         num_photons: int,
         scene_width: float,
         mode: str = "sequential",
         weight_threshold: float = 0.01,
     ):
-        self.tau_max = tau_max
-        self.omega_0 = omega_0  # Single scattering albedo
-        self.g = g  # Asymmetry parameter
+        self.layers = layers
         self.surface_albedo = surface_albedo
         self.num_photons = num_photons
         self.scene_width = scene_width
@@ -150,19 +178,27 @@ class PhotonSimulation:
         self.launch_interval = 2  # Frames between photon launches (sequential mode)
         self.frames_since_launch = 0
 
+    @property
+    def tau_max(self) -> float:
+        """Total optical depth of all layers"""
+        return self.layers[-1].tau_bottom if self.layers else 0.0
+
+    def get_layer_at_tau(self, tau: float) -> Optional[AtmosphericLayer]:
+        """Find which layer contains the given optical depth"""
+        for layer in self.layers:
+            if layer.contains_tau(tau):
+                return layer
+        return None
+
     def reset(
         self,
-        tau_max: float,
-        omega_0: float,
-        g: float,
+        layers: List[AtmosphericLayer],
         surface_albedo: float,
         num_photons: int,
         mode: str = "sequential",
     ):
         """Reset simulation with new parameters"""
-        self.tau_max = tau_max
-        self.omega_0 = omega_0
-        self.g = g
+        self.layers = layers
         self.surface_albedo = surface_albedo
         self.num_photons = num_photons
         self.mode = mode
@@ -288,8 +324,17 @@ class PhotonSimulation:
     def _process_interaction(self, photon: AnimatedPhoton):
         """Process scattering or absorption event"""
 
+        # Get properties of layer at current position
+        layer = self.get_layer_at_tau(photon.tau)
+        if layer is None:
+            # Photon outside any layer - shouldn't happen but handle gracefully
+            return
+
+        omega_0 = layer.omega_0
+        g = layer.g
+
         # Decide: scatter or absorb?
-        if np.random.random() < self.omega_0:
+        if np.random.random() < omega_0:
             # Scattering event - no animation delay, just instant direction change
             # Record scattering event location
             self.stats.total_scatters += 1
@@ -301,7 +346,7 @@ class PhotonSimulation:
 
             # Henyey-Greenstein scattering in 2-stream
             # P(forward) = (1 + g) / 2, P(backward) = (1 - g) / 2
-            p_forward = (1 + self.g) / 2
+            p_forward = (1 + g) / 2
 
             if np.random.random() < p_forward:
                 # Forward scatter: maintain current direction
@@ -325,7 +370,7 @@ class PhotonSimulation:
             photon.absorption_timer = 15  # Fade for 15 frames
 
         # Check weight threshold
-        photon.weight *= self.omega_0
+        photon.weight *= omega_0
         if photon.weight < self.weight_threshold:
             photon.state = PhotonState.ABSORBING
             photon.absorption_timer = 15
