@@ -618,30 +618,30 @@ class FinalPhotonDemo:
                     )
 
     def _draw_profile_plots(self):
-        """Draw scattering and absorption line plots"""
+        """Draw scattering and absorption line plots side-by-side"""
         stats = self.simulation.stats
 
-        # Scattering plot (upper right)
+        # Scattering plot (middle, aligned with animation)
         self._draw_line_plot(
-            x=PLOT_X,
+            x=SCATTER_PLOT_X,
             y=SCATTER_PLOT_Y,
-            width=PLOT_WIDTH,
-            height=PLOT_HEIGHT,
+            width=SCATTER_PLOT_WIDTH,
+            height=SCATTER_PLOT_HEIGHT,
             data=stats.scattering_profile,
             color=(255, 100, 255),
-            title="Scattering Events vs Depth",
+            title="Scattering vs Depth",
             ylabel="Scatters",
         )
 
-        # Absorption plot (lower right)
+        # Absorption plot (right, aligned with animation)
         self._draw_line_plot(
-            x=PLOT_X,
+            x=ABSORB_PLOT_X,
             y=ABSORB_PLOT_Y,
-            width=PLOT_WIDTH,
-            height=PLOT_HEIGHT,
+            width=ABSORB_PLOT_WIDTH,
+            height=ABSORB_PLOT_HEIGHT,
             data=stats.absorption_profile,
             color=(220, 50, 50),
-            title="Absorption Events vs Depth",
+            title="Absorption vs Depth",
             ylabel="Absorptions",
         )
 

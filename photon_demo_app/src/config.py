@@ -9,19 +9,26 @@ WINDOW_HEIGHT = 800
 SCENE_WIDTH = 950  # Left side for animation and plots
 PANEL_WIDTH = WINDOW_WIDTH - SCENE_WIDTH  # Right side for controls
 
-# Animation area (full left side)
+# Layout: Animation | Scattering | Absorption | Control Panel
 ANIM_MARGIN = 40
-ANIM_WIDTH = int(SCENE_WIDTH * 0.7) - ANIM_MARGIN * 2
+
+# Animation area (left third)
+ANIM_WIDTH = int(SCENE_WIDTH * 0.33) - ANIM_MARGIN
 ANIM_HEIGHT = (
     WINDOW_HEIGHT - ANIM_MARGIN * 2 - 180
-)  # Leave space for flux displays and counters at bottom
+)  # Leave space for flux displays and counters
 
-# Profile plot area (right side of scene)
-PLOT_X = int(SCENE_WIDTH * 0.7) + 20
-PLOT_WIDTH = SCENE_WIDTH - PLOT_X - 20
-PLOT_HEIGHT = 300
-SCATTER_PLOT_Y = 50
-ABSORB_PLOT_Y = SCATTER_PLOT_Y + PLOT_HEIGHT + 50
+# Scattering plot (middle third, same height as animation)
+SCATTER_PLOT_X = ANIM_MARGIN + ANIM_WIDTH + 20
+SCATTER_PLOT_Y = ANIM_MARGIN
+SCATTER_PLOT_WIDTH = int(SCENE_WIDTH * 0.33) - 30
+SCATTER_PLOT_HEIGHT = ANIM_HEIGHT
+
+# Absorption plot (right third, same height as animation)
+ABSORB_PLOT_X = SCATTER_PLOT_X + SCATTER_PLOT_WIDTH + 20
+ABSORB_PLOT_Y = ANIM_MARGIN
+ABSORB_PLOT_WIDTH = SCENE_WIDTH - ABSORB_PLOT_X - 20
+ABSORB_PLOT_HEIGHT = ANIM_HEIGHT
 
 # Colors
 COLOR_BG = (240, 245, 250)
