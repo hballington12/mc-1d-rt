@@ -24,7 +24,7 @@ class FinalPhotonDemo:
         pygame.init()
 
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("2-Stream RT Photon Animation - Complete")
+        pygame.display.set_caption("Monte Carlo 2-Stream RT")
 
         self.ui_manager = pygame_gui.UIManager((WINDOW_WIDTH, WINDOW_HEIGHT))
         self.clock = pygame.time.Clock()
@@ -233,7 +233,7 @@ class FinalPhotonDemo:
         self.speed_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect(px, y, w, 20),
             start_value=self.animation_speed,
-            value_range=(0.5, 10.0),
+            value_range=(0.1, 10.0),
             manager=self.ui_manager,
         )
         y += 35
@@ -530,7 +530,7 @@ class FinalPhotonDemo:
                     current_x += dash_length + gap_length
                 # Layer boundary label
                 boundary_text = self.font_small.render(
-                    f"τ = {layer.tau_top:.1f}", True, (80, 80, 80)
+                    f"τ = {layer.tau_top:.1f}", True, (30, 30, 30)
                 )
                 self.screen.blit(boundary_text, (x + w - 60, int(boundary_y) - 15))
 
@@ -629,7 +629,7 @@ class FinalPhotonDemo:
             height=SCATTER_PLOT_HEIGHT,
             data=stats.scattering_profile,
             color=(255, 100, 255),
-            title="Scattering vs Depth",
+            title="Scattering",
             ylabel="Scatters",
         )
 
@@ -641,7 +641,7 @@ class FinalPhotonDemo:
             height=ABSORB_PLOT_HEIGHT,
             data=stats.absorption_profile,
             color=(220, 50, 50),
-            title="Absorption vs Depth",
+            title="Absorption",
             ylabel="Absorptions",
         )
 
@@ -658,7 +658,7 @@ class FinalPhotonDemo:
 
         if sum(data) == 0:
             # No data
-            no_data = self.font_small.render("No data yet", True, (150, 150, 150))
+            no_data = self.font_small.render("No data yet", True, (100, 100, 100))
             text_rect = no_data.get_rect(center=(x + width // 2, y + height // 2))
             self.screen.blit(no_data, text_rect)
             return
@@ -681,15 +681,15 @@ class FinalPhotonDemo:
         for pt in points:
             pygame.draw.circle(self.screen, color, (int(pt[0]), int(pt[1])), 3)
 
-        # Y-axis label (depth)
-        depth_labels = [0, self.simulation.tau_max / 2, self.simulation.tau_max]
-        for i, depth in enumerate(depth_labels):
-            label_y = y + i * (height / 2)
-            text = self.font_small.render(f"τ={depth:.1f}", True, (100, 100, 100))
-            self.screen.blit(text, (x - 35, label_y - 8))
+        # # Y-axis label (depth)
+        # depth_labels = [0, self.simulation.tau_max / 2, self.simulation.tau_max]
+        # for i, depth in enumerate(depth_labels):
+        #     label_y = y + i * (height / 2)
+        #     text = self.font_small.render(f"τ={depth:.1f}", True, (100, 100, 100))
+        #     self.screen.blit(text, (x - 35, label_y - 8))
 
         # X-axis label (max value)
-        max_text = self.font_small.render(f"max: {max(data)}", True, (100, 100, 100))
+        max_text = self.font_small.render(f"max: {max(data)}", True, (30, 30, 30))
         self.screen.blit(max_text, (x + width - 60, y + height + 5))
 
     def _draw_flux_displays(self):
@@ -737,12 +737,12 @@ class FinalPhotonDemo:
         self.screen.blit(flux_text, flux_rect)
 
         # Label
-        label_text = self.font_small.render(label, True, (100, 100, 100))
+        label_text = self.font_small.render(label, True, (30, 30, 30))
         label_rect = label_text.get_rect(center=(x, y + 30))
         self.screen.blit(label_text, label_rect)
 
         # Units
-        units_text = self.font_small.render("W/m²", True, (150, 150, 150))
+        units_text = self.font_small.render("W/m²", True, (50, 50, 50))
         units_rect = units_text.get_rect(center=(x, y + 48))
         self.screen.blit(units_text, units_rect)
 
@@ -774,7 +774,7 @@ class FinalPhotonDemo:
         val_rect = val_text.get_rect(center=(x, y - 10))
         self.screen.blit(val_text, val_rect)
 
-        lab_text = self.font_small.render(label, True, (100, 100, 100))
+        lab_text = self.font_small.render(label, True, (30, 30, 30))
         lab_rect = lab_text.get_rect(center=(x, y + 25))
         self.screen.blit(lab_text, lab_rect)
 

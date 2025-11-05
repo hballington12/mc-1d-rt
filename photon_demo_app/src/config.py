@@ -13,7 +13,7 @@ PANEL_WIDTH = WINDOW_WIDTH - SCENE_WIDTH  # Right side for controls
 ANIM_MARGIN = 40
 
 # Animation area (left third)
-ANIM_WIDTH = int(SCENE_WIDTH * 0.33) - ANIM_MARGIN
+ANIM_WIDTH = int(SCENE_WIDTH * 0.5) - ANIM_MARGIN
 ANIM_HEIGHT = (
     WINDOW_HEIGHT - ANIM_MARGIN * 2 - 180
 )  # Leave space for flux displays and counters
@@ -21,7 +21,7 @@ ANIM_HEIGHT = (
 # Scattering plot (middle third, same height as animation)
 SCATTER_PLOT_X = ANIM_MARGIN + ANIM_WIDTH + 20
 SCATTER_PLOT_Y = ANIM_MARGIN
-SCATTER_PLOT_WIDTH = int(SCENE_WIDTH * 0.33) - 30
+SCATTER_PLOT_WIDTH = int(SCENE_WIDTH * 0.25) - 30
 SCATTER_PLOT_HEIGHT = ANIM_HEIGHT
 
 # Absorption plot (right third, same height as animation)
