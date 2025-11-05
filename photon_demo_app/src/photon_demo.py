@@ -33,8 +33,7 @@ class FinalPhotonDemo:
         # Multi-layer parameters
         self.layers = [
             AtmosphericLayer(
-                tau_top=0.0,
-                tau_bottom=DEFAULT_TAU_MAX,
+                tau_thickness=DEFAULT_TAU_MAX,
                 omega_0=DEFAULT_OMEGA_0,
                 g=DEFAULT_G,
                 preset_name="Custom",
@@ -69,7 +68,7 @@ class FinalPhotonDemo:
         self.sim_running = False
 
     def _create_ui(self):
-        """Create multi-layer control panel"""
+        """Create multi-layer control panel with simplified layout"""
         px = SCENE_WIDTH + 20
         y = 20
         w = PANEL_WIDTH - 60
@@ -82,28 +81,7 @@ class FinalPhotonDemo:
         )
         y += 40
 
-        # Mode toggle
-        pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(px, y, w, 20),
-            text="<b>Propagation Mode:</b>",
-            manager=self.ui_manager,
-        )
-        y += 25
-
-        self.mode_sequential = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(px, y, w // 2 - 5, 30),
-            text="Sequential",
-            manager=self.ui_manager,
-        )
-
-        self.mode_parallel = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(px + w // 2 + 5, y, w // 2 - 5, 30),
-            text="Parallel",
-            manager=self.ui_manager,
-        )
-        y += 45
-
-        # Layer Management Section
+        # ========== Layer Management Section ==========
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
             text="<b>Atmospheric Layers</b>",
@@ -136,7 +114,7 @@ class FinalPhotonDemo:
         )
         y += 45
 
-        # Current Layer Properties Section
+        # ========== Current Layer Properties Section ==========
         self.layer_properties_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
             text=f"<b>Layer {self.current_layer_index + 1} Properties</b>",
@@ -155,35 +133,19 @@ class FinalPhotonDemo:
         )
         y += 35
 
-        # Layer top tau
+        # Optical depth (tau_thickness)
         current_layer = self.layers[self.current_layer_index]
-        self.tau_top_label = pygame_gui.elements.UILabel(
+        self.tau_thickness_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
-            text=f"Layer Top (τ): {current_layer.tau_top:.1f}",
+            text=f"Optical Depth (τ): {current_layer.tau_thickness:.1f}",
             manager=self.ui_manager,
         )
         y += 25
 
-        self.tau_top_slider = pygame_gui.elements.UIHorizontalSlider(
+        self.tau_thickness_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect(px, y, w, 20),
-            start_value=current_layer.tau_top,
-            value_range=(0.0, 50.0),
-            manager=self.ui_manager,
-        )
-        y += 30
-
-        # Layer bottom tau
-        self.tau_bottom_label = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect(px, y, w, 20),
-            text=f"Layer Bottom (τ): {current_layer.tau_bottom:.1f}",
-            manager=self.ui_manager,
-        )
-        y += 25
-
-        self.tau_bottom_slider = pygame_gui.elements.UIHorizontalSlider(
-            relative_rect=pygame.Rect(px, y, w, 20),
-            start_value=current_layer.tau_bottom,
-            value_range=(current_layer.tau_top + 0.1, 50.0),
+            start_value=current_layer.tau_thickness,
+            value_range=(0.1, 30.0),
             manager=self.ui_manager,
         )
         y += 30
@@ -220,7 +182,7 @@ class FinalPhotonDemo:
         )
         y += 35
 
-        # Global Parameters Section
+        # ========== Global Parameters Section ==========
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
             text="<b>Global Parameters</b>",
@@ -263,7 +225,7 @@ class FinalPhotonDemo:
         # Animation speed
         self.speed_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
-            text=f"Speed: {self.animation_speed:.1f}x",
+            text=f"Animation Speed: {self.animation_speed:.1f}x",
             manager=self.ui_manager,
         )
         y += 25
@@ -274,9 +236,30 @@ class FinalPhotonDemo:
             value_range=(0.5, 10.0),
             manager=self.ui_manager,
         )
-        y += 40
+        y += 35
 
-        # Control Buttons
+        # ========== Propagation Mode Section ==========
+        pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(px, y, w, 20),
+            text="<b>Propagation Mode</b>",
+            manager=self.ui_manager,
+        )
+        y += 25
+
+        self.mode_sequential = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(px, y, w // 2 - 5, 30),
+            text="Sequential",
+            manager=self.ui_manager,
+        )
+
+        self.mode_parallel = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(px + w // 2 + 5, y, w // 2 - 5, 30),
+            text="Parallel",
+            manager=self.ui_manager,
+        )
+        y += 45
+
+        # ========== Control Buttons ==========
         self.start_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(px, y, w, 35),
             text="Start Animation",
@@ -291,7 +274,7 @@ class FinalPhotonDemo:
         )
         y += 50
 
-        # Info box
+        # ========== Info box ==========
         self.info_box = pygame_gui.elements.UITextBox(
             html_text=self._get_info_html(),
             relative_rect=pygame.Rect(px, y, w, WINDOW_HEIGHT - y - 20),
@@ -336,24 +319,16 @@ class FinalPhotonDemo:
         if current_layer.preset_name in LAYER_PRESETS:
             self.preset_dropdown.selected_option = current_layer.preset_name
 
-        # Update tau sliders - IMPORTANT: set value_range BEFORE set_current_value
-        self.tau_top_slider.set_current_value(current_layer.tau_top)
-
-        # Update tau_bottom range and value
-        new_bottom_range = (current_layer.tau_top + 0.1, 50.0)
-        if self.tau_bottom_slider.value_range != new_bottom_range:
-            self.tau_bottom_slider.value_range = new_bottom_range
-            self.tau_bottom_slider.rebuild()
-        self.tau_bottom_slider.set_current_value(current_layer.tau_bottom)
+        # Update tau_thickness slider
+        self.tau_thickness_slider.set_current_value(current_layer.tau_thickness)
 
         # Update omega and g sliders
         self.omega_slider.set_current_value(current_layer.omega_0)
         self.g_slider.set_current_value(current_layer.g)
 
         # Update labels
-        self.tau_top_label.set_text(f"Layer Top (τ): {current_layer.tau_top:.1f}")
-        self.tau_bottom_label.set_text(
-            f"Layer Bottom (τ): {current_layer.tau_bottom:.1f}"
+        self.tau_thickness_label.set_text(
+            f"Optical Depth (τ): {current_layer.tau_thickness:.1f}"
         )
         self.omega_label.set_text(f"SSA (ω₀): {current_layer.omega_0:.2f}")
         self.g_label.set_text(f"Asymmetry (g): {current_layer.g:.2f}")
@@ -376,11 +351,14 @@ class FinalPhotonDemo:
         current_layer = self.layers[self.current_layer_index]
 
         # Update layer properties from preset
-        # Note: We keep the current tau boundaries, only update optical properties
+        current_layer.tau_thickness = preset["tau_thickness"]
         current_layer.omega_0 = preset["omega_0"]
         current_layer.g = preset["g"]
         current_layer.preset_name = preset_name
         current_layer.color = preset["color"]
+
+        # Recalculate layer boundaries
+        self.simulation._update_layer_boundaries()
 
         # Update UI controls
         self._update_layer_controls()
@@ -390,15 +368,9 @@ class FinalPhotonDemo:
         if len(self.layers) >= MAX_LAYERS:
             return
 
-        # New layer starts where the last layer ended
-        last_layer = self.layers[-1]
-        new_tau_top = last_layer.tau_bottom
-        new_tau_bottom = new_tau_top + 1.0  # Default 1.0 optical depth thickness
-
         # Create new layer with default properties
         new_layer = AtmosphericLayer(
-            tau_top=new_tau_top,
-            tau_bottom=new_tau_bottom,
+            tau_thickness=1.0,
             omega_0=DEFAULT_OMEGA_0,
             g=DEFAULT_G,
             preset_name="Custom",
@@ -406,6 +378,9 @@ class FinalPhotonDemo:
         )
 
         self.layers.append(new_layer)
+
+        # Recalculate layer boundaries
+        self.simulation._update_layer_boundaries()
 
         # Select the new layer BEFORE updating dropdown
         self.current_layer_index = len(self.layers) - 1
@@ -440,8 +415,8 @@ class FinalPhotonDemo:
         if self.current_layer_index >= len(self.layers):
             self.current_layer_index = len(self.layers) - 1
 
-        # Rebuild layer boundaries
-        self._rebuild_layers()
+        # Recalculate layer boundaries
+        self.simulation._update_layer_boundaries()
 
         # Update layer dropdown - rebuild it completely
         layer_options = [f"Layer {i + 1}" for i in range(len(self.layers))]
@@ -461,22 +436,6 @@ class FinalPhotonDemo:
         # Update controls
         self._update_layer_controls()
         self._update_layer_buttons()
-
-    def _rebuild_layers(self):
-        """Reorganize layer boundaries to ensure they're contiguous"""
-        if not self.layers:
-            return
-
-        # Ensure first layer starts at 0
-        self.layers[0].tau_top = 0.0
-
-        # Make each subsequent layer start where the previous one ended
-        for i in range(1, len(self.layers)):
-            self.layers[i].tau_top = self.layers[i - 1].tau_bottom
-
-        # Update controls to reflect changes
-        if hasattr(self, "tau_top_slider"):
-            self._update_layer_controls()
 
     def _get_info_html(self):
         """Info text"""
@@ -507,15 +466,14 @@ class FinalPhotonDemo:
         """Update labels for current layer and global parameters"""
         current_layer = self.layers[self.current_layer_index]
 
-        self.tau_top_label.set_text(f"Layer Top (τ): {current_layer.tau_top:.1f}")
-        self.tau_bottom_label.set_text(
-            f"Layer Bottom (τ): {current_layer.tau_bottom:.1f}"
+        self.tau_thickness_label.set_text(
+            f"Optical Depth (τ): {current_layer.tau_thickness:.1f}"
         )
         self.omega_label.set_text(f"SSA (ω₀): {current_layer.omega_0:.2f}")
         self.g_label.set_text(f"Asymmetry (g): {current_layer.g:.2f}")
         self.albedo_label.set_text(f"Surface Albedo: {self.surface_albedo:.2f}")
         self.nphotons_label.set_text(f"Photons: {int(self.num_photons)}")
-        self.speed_label.set_text(f"Speed: {self.animation_speed:.1f}x")
+        self.speed_label.set_text(f"Animation Speed: {self.animation_speed:.1f}x")
 
     def _draw_scene(self):
         """Draw main visualization"""
@@ -844,23 +802,11 @@ class FinalPhotonDemo:
             if event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
                 current_layer = self.layers[self.current_layer_index]
 
-                if event.ui_element == self.tau_top_slider:
-                    current_layer.tau_top = event.value
-                    # Ensure bottom is always > top
-                    if current_layer.tau_bottom <= current_layer.tau_top:
-                        current_layer.tau_bottom = current_layer.tau_top + 0.1
-                        self.tau_bottom_slider.set_current_value(
-                            current_layer.tau_bottom
-                        )
-                    # Update tau_bottom slider range
-                    self.tau_bottom_slider.value_range = (
-                        current_layer.tau_top + 0.1,
-                        50.0,
-                    )
-                    self._rebuild_layers()
-                elif event.ui_element == self.tau_bottom_slider:
-                    current_layer.tau_bottom = event.value
-                    self._rebuild_layers()
+                if event.ui_element == self.tau_thickness_slider:
+                    current_layer.tau_thickness = event.value
+                    current_layer.preset_name = "Custom"  # Mark as custom
+                    # Recalculate layer boundaries
+                    self.simulation._update_layer_boundaries()
                 elif event.ui_element == self.omega_slider:
                     current_layer.omega_0 = event.value
                     current_layer.preset_name = "Custom"  # Mark as custom

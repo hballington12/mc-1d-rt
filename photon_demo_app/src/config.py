@@ -78,52 +78,52 @@ FLUX_LABEL_SIZE = 18
 MAX_LAYERS = 5
 MIN_LAYERS = 1
 
-# Layer presets (name: {tau, omega_0, g, description})
+# Layer presets (name: {tau_thickness, omega_0, g, description})
 LAYER_PRESETS = {
     "Clear Atmosphere": {
-        "tau": 0.1,
+        "tau_thickness": 0.1,
         "omega_0": 0.99,
         "g": 0.1,
         "description": "Rayleigh scattering only",
         "color": (135, 206, 250, 80),  # Light blue
     },
     "Thin Cirrus": {
-        "tau": 1.0,
+        "tau_thickness": 1.0,
         "omega_0": 0.999,
         "g": 0.85,
         "description": "Ice crystals, high altitude",
         "color": (240, 248, 255, 100),  # Alice blue
     },
     "Water Cloud": {
-        "tau": 10.0,
+        "tau_thickness": 10.0,
         "omega_0": 0.99,
         "g": 0.85,
         "description": "Liquid water droplets",
         "color": (220, 220, 220, 120),  # Light gray
     },
     "Thick Cloud": {
-        "tau": 30.0,
+        "tau_thickness": 30.0,
         "omega_0": 0.999,
         "g": 0.85,
         "description": "Dense water cloud",
         "color": (180, 180, 180, 150),  # Gray
     },
     "Aerosol Layer": {
-        "tau": 0.5,
+        "tau_thickness": 0.5,
         "omega_0": 0.9,
         "g": 0.7,
         "description": "Dust or pollution",
         "color": (205, 170, 125, 100),  # Tan
     },
     "Smoke/Soot": {
-        "tau": 2.0,
+        "tau_thickness": 2.0,
         "omega_0": 0.85,
         "g": 0.6,
         "description": "Absorbing particles",
         "color": (139, 137, 137, 130),  # Dark gray
     },
     "Custom": {
-        "tau": 3.0,
+        "tau_thickness": 3.0,
         "omega_0": 0.9,
         "g": 0.0,
         "description": "User-defined properties",

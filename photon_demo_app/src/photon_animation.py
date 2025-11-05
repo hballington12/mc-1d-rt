@@ -16,29 +16,31 @@ class AtmosphericLayer:
     Defines a single atmospheric layer with optical properties
 
     Attributes:
-        tau_top: Optical depth at top of layer
-        tau_bottom: Optical depth at bottom of layer
+        tau_thickness: Optical depth thickness of this layer
         omega_0: Single scattering albedo [0, 1]
         g: Asymmetry parameter [-1, 1]
         preset_name: Name of preset used (for UI display)
         color: RGBA color for visualization
+        tau_top: Calculated top boundary (set by simulation)
+        tau_bottom: Calculated bottom boundary (set by simulation)
     """
 
-    tau_top: float
-    tau_bottom: float
+    tau_thickness: float
     omega_0: float
     g: float
     preset_name: str = "Custom"
     color: Tuple[int, int, int, int] = (135, 206, 235, 80)
-
-    @property
-    def tau_thickness(self) -> float:
-        """Optical thickness of this layer"""
-        return self.tau_bottom - self.tau_top
+    tau_top: float = 0.0
+    tau_bottom: float = 0.0
 
     def contains_tau(self, tau: float) -> bool:
         """Check if optical depth is within this layer"""
         return self.tau_top <= tau <= self.tau_bottom
+
+    def update_boundaries(self, tau_top: float):
+        """Update layer boundaries based on starting position"""
+        self.tau_top = tau_top
+        self.tau_bottom = tau_top + self.tau_thickness
 
 
 class PhotonState(Enum):
@@ -178,6 +180,16 @@ class PhotonSimulation:
         self.launch_interval = 2  # Frames between photon launches (sequential mode)
         self.frames_since_launch = 0
 
+        # Calculate layer boundaries from tau_thickness
+        self._update_layer_boundaries()
+
+    def _update_layer_boundaries(self):
+        """Calculate tau_top and tau_bottom for all layers based on tau_thickness"""
+        tau_top = 0.0
+        for layer in self.layers:
+            layer.update_boundaries(tau_top)
+            tau_top = layer.tau_bottom
+
     @property
     def tau_max(self) -> float:
         """Total optical depth of all layers"""
@@ -207,6 +219,9 @@ class PhotonSimulation:
         self.stats.reset()
         self.launch_counter = 0
         self.frames_since_launch = 0
+
+        # Calculate layer boundaries from tau_thickness
+        self._update_layer_boundaries()
 
         # In parallel mode, launch all photons at once
         if self.mode == "parallel":
