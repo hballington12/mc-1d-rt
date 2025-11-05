@@ -285,9 +285,10 @@ class PhotonSimulation:
             if photon.absorption_timer <= 0:
                 photon.state = PhotonState.ABSORBED
                 self.stats.absorbed += 1
-                # Record absorption depth
+                # Record absorption depth at the true sampled interaction position
                 bin_idx = int(
-                    (photon.tau / self.tau_max) * len(self.stats.absorption_profile)
+                    (photon.next_interaction_tau / self.tau_max)
+                    * len(self.stats.absorption_profile)
                 )
                 bin_idx = min(bin_idx, len(self.stats.absorption_profile) - 1)
                 self.stats.absorption_profile[bin_idx] += 1
@@ -351,10 +352,11 @@ class PhotonSimulation:
         # Decide: scatter or absorb?
         if np.random.random() < omega_0:
             # Scattering event - no animation delay, just instant direction change
-            # Record scattering event location
+            # Record scattering event location at the true sampled interaction position
             self.stats.total_scatters += 1
             bin_idx = int(
-                (photon.tau / self.tau_max) * len(self.stats.scattering_profile)
+                (photon.next_interaction_tau / self.tau_max)
+                * len(self.stats.scattering_profile)
             )
             bin_idx = min(bin_idx, len(self.stats.scattering_profile) - 1)
             self.stats.scattering_profile[bin_idx] += 1
