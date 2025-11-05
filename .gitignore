@@ -1,0 +1,12 @@
+2stream_monte_carlo_guide.md
+CLAUDE.md
+GUI_APP_COMPLETE.md
+PYGAME_GUI_ARCHITECTURE_SUMMARY.md
+atmosphere_structure.png
+monte_carlo_2stream.py
+optical_depth_distribution.png
+photon_paths.png
+rt2s.ipynb
+test_photon_debug.py
+mc2s_app
+__pycache__
