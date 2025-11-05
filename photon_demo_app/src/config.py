@@ -37,15 +37,15 @@ COLOR_PHOTON_ABSORBED = (200, 50, 50)  # Red (absorbed)
 COLOR_SCATTER_EVENT = (255, 100, 255)  # Magenta flash for scattering
 
 # Photon animation
-PHOTON_RADIUS = 4
+PHOTON_RADIUS = 3
 PHOTON_SPEED = 2.0  # Pixels per frame (in optical depth units)
-SCATTER_FLASH_DURATION = 10  # Frames to show scatter event flash
-ABSORPTION_FADE_DURATION = 15  # Frames for absorption animation
+SCATTER_FLASH_DURATION = 20  # Frames to show scatter event flash
+ABSORPTION_FADE_DURATION = 25  # Frames for absorption animation
 
 # Simulation parameters
 DEFAULT_TAU_MAX = 3.0
 DEFAULT_OMEGA_0 = 0.9  # Single scattering albedo
-DEFAULT_G = 0.0  # Asymmetry parameter
+DEFAULT_G = 0.75  # Asymmetry parameter
 DEFAULT_SURFACE_ALBEDO = 0.2
 DEFAULT_NUM_PHOTONS = 100
 MIN_PHOTONS = 1
@@ -78,52 +78,66 @@ FLUX_LABEL_SIZE = 18
 MAX_LAYERS = 5
 MIN_LAYERS = 1
 
-# Layer presets (name: {tau_thickness, omega_0, g, description})
+# Layer presets with literature-based optical properties
+# References:
+# - Rayleigh: g=0 (symmetric), ω=1.0 (pure scattering), τ~0.08 at 500nm
+# - Cirrus: τ~0.3-1.4 (95%), ω~0.84-0.99, g~0.75 for ice crystals
+# - Water clouds: τ~5-10, ω~0.9995-0.9999, g~0.85 (Mie theory)
+# - Urban aerosol: τ~0.1-0.2, ω~0.835 (measured mean), g~0.39
+# - Volcanic sulfate: τ~0.0-0.3, ω~0.98 (highly reflective)
+# - Biomass smoke: τ~0.23, ω~0.87, g~0.60
 LAYER_PRESETS = {
-    "Clear Atmosphere": {
-        "tau_thickness": 0.1,
-        "omega_0": 0.99,
-        "g": 0.1,
-        "description": "Rayleigh scattering only",
-        "color": (135, 206, 250, 80),  # Light blue
+    "Rayleigh (Clear Sky)": {
+        "tau_thickness": 0.08,
+        "omega_0": 1.0,
+        "g": 0.0,
+        "description": "Molecular scattering only",
+        "color": (135, 206, 250, 60),  # Light blue
     },
-    "Thin Cirrus": {
-        "tau_thickness": 1.0,
-        "omega_0": 0.999,
-        "g": 0.85,
-        "description": "Ice crystals, high altitude",
-        "color": (240, 248, 255, 100),  # Alice blue
+    "Cirrus (Ice Cloud)": {
+        "tau_thickness": 0.8,
+        "omega_0": 0.92,
+        "g": 0.75,
+        "description": "High-altitude ice crystals",
+        "color": (240, 248, 255, 90),  # Alice blue
     },
-    "Water Cloud": {
+    "Stratocumulus (Water)": {
         "tau_thickness": 10.0,
-        "omega_0": 0.99,
+        "omega_0": 0.9999,
         "g": 0.85,
-        "description": "Liquid water droplets",
-        "color": (220, 220, 220, 120),  # Light gray
+        "description": "Low-level water cloud",
+        "color": (220, 220, 220, 130),  # Light gray
     },
-    "Thick Cloud": {
-        "tau_thickness": 30.0,
-        "omega_0": 0.999,
+    "Altostratus (Water)": {
+        "tau_thickness": 5.0,
+        "omega_0": 0.9995,
         "g": 0.85,
-        "description": "Dense water cloud",
-        "color": (180, 180, 180, 150),  # Gray
+        "description": "Mid-level water cloud",
+        "color": (200, 200, 210, 110),  # Light gray-blue
     },
-    "Aerosol Layer": {
-        "tau_thickness": 0.5,
-        "omega_0": 0.9,
-        "g": 0.7,
-        "description": "Dust or pollution",
-        "color": (205, 170, 125, 100),  # Tan
+    "Urban Aerosol": {
+        "tau_thickness": 0.15,
+        "omega_0": 0.835,
+        "g": 0.39,
+        "description": "Pollution and urban haze",
+        "color": (205, 170, 125, 110),  # Tan/brown
     },
-    "Smoke/Soot": {
-        "tau_thickness": 2.0,
-        "omega_0": 0.85,
-        "g": 0.6,
-        "description": "Absorbing particles",
-        "color": (139, 137, 137, 130),  # Dark gray
+    "Volcanic Sulfate": {
+        "tau_thickness": 0.10,
+        "omega_0": 0.98,
+        "g": 0.65,
+        "description": "Stratospheric sulfate layer",
+        "color": (190, 190, 200, 100),  # Light gray-white
+    },
+    "Biomass Smoke": {
+        "tau_thickness": 0.23,
+        "omega_0": 0.87,
+        "g": 0.60,
+        "description": "Wildfire/agricultural smoke",
+        "color": (139, 137, 137, 140),  # Dark gray
     },
     "Custom": {
-        "tau_thickness": 3.0,
+        "tau_thickness": 1.0,
         "omega_0": 0.9,
         "g": 0.0,
         "description": "User-defined properties",
