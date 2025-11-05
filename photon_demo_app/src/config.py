@@ -54,9 +54,9 @@ DEFAULT_TAU_MAX = 3.0
 DEFAULT_OMEGA_0 = 0.9  # Single scattering albedo
 DEFAULT_G = 0.75  # Asymmetry parameter
 DEFAULT_SURFACE_ALBEDO = 0.2
-DEFAULT_NUM_PHOTONS = 100
+DEFAULT_NUM_PHOTONS = 1000
 MIN_PHOTONS = 1
-MAX_PHOTONS = 10000
+MAX_PHOTONS = 25000
 
 # Propagation modes
 SEQUENTIAL_MODE = "sequential"  # Launch photons one by one
@@ -70,7 +70,7 @@ WEIGHT_THRESHOLD = 0.01
 FPS = 60
 
 # Statistics bins
-NUM_DEPTH_BINS = 30  # For showing where photons are absorbed/scattered
+NUM_DEPTH_BINS = 25  # For showing where photons are absorbed/scattered
 
 # Counter display
 COUNTER_FONT_SIZE = 48

@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
 from enum import Enum
 
+from config import NUM_DEPTH_BINS
+
 
 @dataclass
 class AtmosphericLayer:
@@ -106,10 +108,10 @@ class SimulationStats:
     absorbed: int = 0
 
     # Where photons get absorbed (depth bins)
-    absorption_profile: List[int] = field(default_factory=lambda: [0] * 30)
+    absorption_profile: List[int] = field(default_factory=lambda: [0] * NUM_DEPTH_BINS)
 
     # Where photons scatter (depth bins)
-    scattering_profile: List[int] = field(default_factory=lambda: [0] * 30)
+    scattering_profile: List[int] = field(default_factory=lambda: [0] * NUM_DEPTH_BINS)
 
     # Running counts of photons in each state
     currently_moving: int = 0
