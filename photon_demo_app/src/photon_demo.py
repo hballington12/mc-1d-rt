@@ -76,7 +76,7 @@ class FinalPhotonDemo:
         # Title
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 30),
-            text="<b>2-Stream RT Multi-Layer</b>",
+            text="2-Stream RT Multi-Layer",
             manager=self.ui_manager,
         )
         y += 40
@@ -84,7 +84,7 @@ class FinalPhotonDemo:
         # ========== Layer Management Section ==========
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
-            text="<b>Atmospheric Layers</b>",
+            text="Atmospheric Layers",
             manager=self.ui_manager,
         )
         y += 25
@@ -117,7 +117,7 @@ class FinalPhotonDemo:
         # ========== Current Layer Properties Section ==========
         self.layer_properties_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
-            text=f"<b>Layer {self.current_layer_index + 1} Properties</b>",
+            text=f"Layer {self.current_layer_index + 1} Properties",
             manager=self.ui_manager,
         )
         y += 25
@@ -185,7 +185,7 @@ class FinalPhotonDemo:
         # ========== Global Parameters Section ==========
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
-            text="<b>Global Parameters</b>",
+            text="Global Parameters",
             manager=self.ui_manager,
         )
         y += 25
@@ -241,7 +241,7 @@ class FinalPhotonDemo:
         # ========== Propagation Mode Section ==========
         pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(px, y, w, 20),
-            text="<b>Propagation Mode</b>",
+            text="Propagation Mode",
             manager=self.ui_manager,
         )
         y += 25
@@ -312,7 +312,7 @@ class FinalPhotonDemo:
 
         # Update property label
         self.layer_properties_label.set_text(
-            f"<b>Layer {self.current_layer_index + 1} Properties</b>"
+            f"Layer {self.current_layer_index + 1} Properties"
         )
 
         # Update preset dropdown (if the preset exists in options)
@@ -530,20 +530,20 @@ class FinalPhotonDemo:
                     current_x += dash_length + gap_length
                 # Layer boundary label
                 boundary_text = self.font_small.render(
-                    f"τ={layer.tau_top:.1f}", True, (80, 80, 80)
+                    f"τ = {layer.tau_top:.1f}", True, (80, 80, 80)
                 )
                 self.screen.blit(boundary_text, (x + w - 60, int(boundary_y) - 15))
 
         # TOA (top boundary)
         pygame.draw.line(self.screen, COLOR_TOA, (x, y), (x + w, y), 3)
-        text = self.font_medium.render("τ=0 (TOA)", True, COLOR_TOA)
+        text = self.font_medium.render("τ = 0 (TOA)", True, COLOR_TOA)
         self.screen.blit(text, (x + 10, y - 30))
 
         # Surface (bottom boundary)
         surf_y = y + h
         pygame.draw.line(self.screen, COLOR_SURFACE, (x, surf_y), (x + w, surf_y), 3)
         text = self.font_medium.render(
-            f"τ={tau_max:.1f} (Surface, A={self.surface_albedo:.2f})",
+            f"τ = {tau_max:.1f} (Surface, Albedo = {self.surface_albedo:.2f})",
             True,
             COLOR_SURFACE,
         )
@@ -708,7 +708,7 @@ class FinalPhotonDemo:
 
         # Incident flux (TOA)
         self._draw_flux_value(
-            x_start + spacing // 2, y_pos, incident_flux, "Incident F↓", (255, 200, 0)
+            x_start + spacing // 2, y_pos, incident_flux, "Incident Flux", (255, 200, 0)
         )
 
         # Reflected flux
@@ -716,7 +716,7 @@ class FinalPhotonDemo:
             x_start + spacing + spacing // 2,
             y_pos,
             reflected_flux,
-            "Reflected F↑",
+            "Reflected Flux",
             (0, 150, 255),
         )
 
@@ -725,7 +725,7 @@ class FinalPhotonDemo:
             x_start + 2 * spacing + spacing // 2,
             y_pos,
             transmitted_flux,
-            "Transmitted F↓",
+            "Transmitted Flux",
             (255, 150, 0),
         )
 

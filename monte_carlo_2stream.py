@@ -237,12 +237,12 @@ def visualize_atmosphere(
 
     # Panel 1: Atmospheric structure
     ax1 = axes[0]
-    ax1.axhline(y=0, color="navy", linewidth=3, label="Top of Atmosphere (τ=0)")
+    ax1.axhline(y=0, color="navy", linewidth=3, label="Top of Atmosphere (τ = 0)")
     ax1.axhline(
         y=atmosphere.tau_max,
         color="saddlebrown",
         linewidth=3,
-        label=f"Surface (τ={atmosphere.tau_max})",
+        label=f"Surface (τ = {atmosphere.tau_max})",
     )
     ax1.fill_between(
         [0, 1], 0, atmosphere.tau_max, alpha=0.3, color="skyblue", label="Atmosphere"
